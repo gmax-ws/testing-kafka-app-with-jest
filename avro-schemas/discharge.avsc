@@ -1,0 +1,17 @@
+{
+    "type": "record",
+    "namespace": "com.colinwren",
+    "name": "Discharge",
+    "doc": "Avro Schema for patient discharge messages",
+    "fields": [{
+            "name": "nhsNumber",
+            "type": "string",
+            "doc": "NHS Number for the Patient"
+        },
+        {
+            "name": "dischargeDate",
+            "type": "long",
+            "doc": "Unix Epoch timestamp in ms at which the Patient was Discharged"
+        }
+    ]
+}
