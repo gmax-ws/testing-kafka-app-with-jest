@@ -1,47 +1,22 @@
-const restify = require('restify');
-
-function admit(req, res, next) {
-  const {
-    name,
-    // nhsNumber,
-    admittingWard,
-    admissionDate
-  } = req.body;
-  console.log(`admitting ${name} to ${admittingWard} on ${admissionDate}`);
-  res.send(201);
-  next();
-}
-
-function discharge(req, res, next) {
-  const {
-    nhsNumber,
-    dischargeDate
-  } = req.body;
-  console.log(`Discharging ${nhsNumber} on ${dischargeDate}`);
-  res.send(200);
-  next();
-}
-
-function transfer(req, res, next) {
-  const {
-    nhsNumber,
-    fromWard,
-    toWard,
-    transferDate
-  } = req.body;
-  console.log(`Transferring ${nhsNumber} from ${fromWard} to ${toWard} on ${transferDate}`);
-  res.send(200);
-  next();
-}
+import restify from 'restify';
+import { admit, discharge, transfer } from './server';
+import { sendAdmitMessage, sendDischargeMessage, sendTransferMessage} from './messaging';
+import KafkaProducer from './kafkaProducer';
 
 
-const server = restify.createServer();
-server.use(restify.plugins.bodyParser());
-server.post('/admit', admit);
-server.post('/discharge', discharge);
-server.post('/transfer', transfer);
+// Set up the API Server
+const apiServer = restify.createServer();
+apiServer.use(restify.plugins.bodyParser());
+apiServer.pre(restify.plugins.pre.context());
+
+// Set up the Kafka Producer
+new KafkaProducer().then((producer) => {
+  apiServer.post('/admit', admit, (res, req, next) => sendAdmitMessage(res, req, next, producer));
+  apiServer.post('/discharge', discharge, sendDischargeMessage);
+  apiServer.post('/transfer', transfer, sendTransferMessage);
 
 
-server.listen(8080, () => {
-  console.log('%s listening at %s', server.name, server.url);
+  apiServer.listen(8080, () => {
+    console.log('%s listening at %s', apiServer.name, apiServer.url);
+  });
 });

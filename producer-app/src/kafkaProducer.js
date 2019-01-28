@@ -22,7 +22,7 @@ class KafkaProducer {
    * @return {KafkaAvro} unitialised Avro Kafka client
    */
   static getKafkaClient() {
-    return new KafkaAvro({ kafkaBroker, schemaRegistry });
+    return new KafkaAvro({ kafkaBroker, schemaRegistry, topics: [topic] });
   }
 
   /**
@@ -71,11 +71,11 @@ class KafkaProducer {
    * producer.
    *
    * @param  {String} key   Key to publish message with
-   * @param  {String} value JSON Object to pass as value
+   * @param  {Object} value JSON Object to pass as value
    * @return {void}
    */
   sendMessageToKafka(key, value) {
-    this.producer.produce(topic, -1, key, value);
+    this.producer.produce(topic, -1, value, key);
   }
 }
 

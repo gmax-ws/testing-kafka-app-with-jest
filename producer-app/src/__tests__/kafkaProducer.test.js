@@ -1,13 +1,12 @@
-import KafkaAvro, { initMock, producerOnMock, producerProduceMock } from 'kafka-avro';
+import KafkaAvro, { producerOnMock, producerProduceMock } from 'kafka-avro';
 import KafkaProducer from '../KafkaProducer';
 
-// jest.genMockFromModule('kafka-avro');
 jest.mock('kafka-avro');
 
 describe('KafkaProducer', () => {
   describe('getKafkaClient', () => {
     it('Returns a avro-kafka client', () => {
-      const client = KafkaProducer.getKafkaClient();
+      KafkaProducer.getKafkaClient();
       expect(KafkaAvro).toBeCalled();
     });
   });
@@ -80,7 +79,7 @@ describe('KafkaProducer', () => {
   describe('sendMessageToKafka', () => {
     beforeAll(async () => {
       const producer = await new KafkaProducer();
-      producer.sendMessageToKafka('test', {'this': 'is a test'});
+      producer.sendMessageToKafka('test', { test: 'message' });
     });
     it('Uses the topic defined in config', () => {
       expect(producerProduceMock.mock.calls[0][0]).toBe('test');
@@ -89,10 +88,10 @@ describe('KafkaProducer', () => {
       expect(producerProduceMock.mock.calls[0][1]).toBe(-1);
     })
     it('Uses the provided key for the message', () => {
-      expect(producerProduceMock.mock.calls[0][2]).toBe('test');
+      expect(producerProduceMock.mock.calls[0][3]).toBe('test');
     });
     it('Uses the provided value for the message', () => {
-      expect(producerProduceMock.mock.calls[0][3]).toEqual({'this': 'is a test'});
+      expect(producerProduceMock.mock.calls[0][2]).toEqual({ test: 'message' });
     });
   });
 });
