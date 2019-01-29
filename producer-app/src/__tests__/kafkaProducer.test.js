@@ -36,7 +36,7 @@ describe('KafkaProducer', () => {
     it('Sends a stringified version of the disconnect args to console.log', () => {
       const logMock = jest.fn();
       global.console.log = logMock;
-      KafkaProducer.logDisconnectArguments({test: 'arguments'});
+      KafkaProducer.logDisconnectArguments({ test: 'arguments' });
       expect(logMock.mock.calls[0][0]).toBe('disconnected from Kafka: {"test":"arguments"}');
     });
   });
@@ -86,7 +86,7 @@ describe('KafkaProducer', () => {
     });
     it('Uses -1 for the partition', () => {
       expect(producerProduceMock.mock.calls[0][1]).toBe(-1);
-    })
+    });
     it('Uses the provided key for the message', () => {
       expect(producerProduceMock.mock.calls[0][3]).toBe('test');
     });

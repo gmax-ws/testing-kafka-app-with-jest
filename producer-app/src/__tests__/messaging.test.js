@@ -21,7 +21,6 @@ describe('Messaging', () => {
       produceMock.mockReset();
     });
     it('Sends Message to Kafka Queue', () => {
-
       sendAdmitMessage(req, jest.fn(), nextMock, producer);
       expect(produceMock.mock.calls[0][0].indexOf('admit-')).toBeGreaterThan(-1);
       expect(produceMock.mock.calls[0][1]).toEqual({ body: { 'com.colinwren.Admit': req.body } });

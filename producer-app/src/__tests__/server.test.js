@@ -4,7 +4,7 @@ describe('Server endpoints', () => {
   const sendMock = jest.fn();
   const nextMock = jest.fn();
   const testResponse = {
-    send: sendMock,
+    send: sendMock
   };
   describe('Admit endpoint', () => {
     beforeEach(() => {
@@ -26,28 +26,28 @@ describe('Server endpoints', () => {
     });
     it('Calls res.send() with a 400 when name not passed', () => {
       const { name, ...nameLess } = testRequest.body;
-      admit({body: nameLess}, testResponse, nextMock);
+      admit({ body: nameLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'name values not present in body' });
       expect(nextMock).not.toBeCalled();
     });
     it('Calls res.send() with a 400 when nhsNumber not passed', () => {
       const { nhsNumber, ...numberLess } = testRequest.body;
-      admit({body: numberLess}, testResponse, nextMock);
+      admit({ body: numberLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'nhsNumber values not present in body' });
       expect(nextMock).not.toBeCalled();
     });
     it('Calls res.send() with a 400 when admittingWard not passed', () => {
       const { admittingWard, ...wardLess } = testRequest.body;
-      admit({body: wardLess}, testResponse, nextMock);
+      admit({ body: wardLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'admittingWard values not present in body' });
       expect(nextMock).not.toBeCalled();
     });
     it('Calls res.send() with a 400 when admissionDate not passed', () => {
       const { admissionDate, ...dateLess } = testRequest.body;
-      admit({body: dateLess}, testResponse, nextMock);
+      admit({ body: dateLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'admissionDate values not present in body' });
       expect(nextMock).not.toBeCalled();
@@ -71,14 +71,14 @@ describe('Server endpoints', () => {
     });
     it('Calls res.send() with a 400 when nhsNumber not passed', () => {
       const { nhsNumber, ...numberLess } = testRequest.body;
-      discharge({body: numberLess}, testResponse, nextMock);
+      discharge({ body: numberLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'nhsNumber values not present in body' });
       expect(nextMock).not.toBeCalled();
     });
     it('Calls res.send() with a 400 when dischargeDate not passed', () => {
       const { dischargeDate, ...dateLess } = testRequest.body;
-      discharge({body: dateLess}, testResponse, nextMock);
+      discharge({ body: dateLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'dischargeDate values not present in body' });
       expect(nextMock).not.toBeCalled();
@@ -104,28 +104,28 @@ describe('Server endpoints', () => {
     });
     it('Calls res.send() with a 400 when nhsNumber not passed', () => {
       const { nhsNumber, ...numberLess } = testRequest.body;
-      transfer({body: numberLess}, testResponse, nextMock);
+      transfer({ body: numberLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'nhsNumber values not present in body' });
       expect(nextMock).not.toBeCalled();
     });
     it('Calls res.send() with a 400 when toWard not passed', () => {
       const { toWard, ...wardLess } = testRequest.body;
-      transfer({body: wardLess}, testResponse, nextMock);
+      transfer({ body: wardLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'toWard values not present in body' });
       expect(nextMock).not.toBeCalled();
     });
     it('Calls res.send() with a 400 when fromWard not passed', () => {
       const { fromWard, ...wardLess } = testRequest.body;
-      transfer({body: wardLess}, testResponse, nextMock);
+      transfer({ body: wardLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'fromWard values not present in body' });
       expect(nextMock).not.toBeCalled();
     });
     it('Calls res.send() with a 400 when transferDate not passed', () => {
       const { transferDate, ...dateLess } = testRequest.body;
-      transfer({body: dateLess}, testResponse, nextMock);
+      transfer({ body: dateLess }, testResponse, nextMock);
       expect(sendMock.mock.calls[0][0]).toBe(400);
       expect(sendMock.mock.calls[0][1]).toEqual({ error: 'transferDate values not present in body' });
       expect(nextMock).not.toBeCalled();

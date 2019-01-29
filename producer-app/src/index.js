@@ -1,6 +1,6 @@
 import restify from 'restify';
 import { admit, discharge, transfer } from './server';
-import { sendAdmitMessage, sendDischargeMessage, sendTransferMessage} from './messaging';
+import { sendAdmitMessage, sendDischargeMessage, sendTransferMessage } from './messaging';
 import KafkaProducer from './kafkaProducer';
 
 
@@ -11,9 +11,9 @@ apiServer.pre(restify.plugins.pre.context());
 
 // Set up the Kafka Producer
 new KafkaProducer().then((producer) => {
-  apiServer.post('/admit', admit, (res, req, next) => sendAdmitMessage(res, req, next, producer));
-  apiServer.post('/discharge', discharge, sendDischargeMessage);
-  apiServer.post('/transfer', transfer, sendTransferMessage);
+  apiServer.post('/admit', admit, (req, res, next) => sendAdmitMessage(req, res, next, producer));
+  apiServer.post('/discharge', discharge, (req, res, next) => sendDischargeMessage(req, res, next, producer));
+  apiServer.post('/transfer', transfer, (req, res, next) => sendTransferMessage(req, res, next, producer));
 
 
   apiServer.listen(8080, () => {
