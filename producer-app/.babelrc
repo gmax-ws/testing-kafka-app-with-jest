@@ -8,5 +8,5 @@
       }
     ]
   ],
-  "plugins": ["rewire"]
+  "plugins": ["@babel/plugin-proposal-throw-expressions"]
 }

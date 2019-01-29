@@ -16,7 +16,7 @@ const sendAdmitMessage = (req, res, next, producer) => {
   try {
     producer.sendMessageToKafka(`admit-${uuid()}`, message);
   } catch (err) {
-    console.log(`error producing message ${err.message}`);
+    console.log(`error producing admit message: ${err.message}`);
   }
   next();
 };
@@ -27,8 +27,19 @@ const sendAdmitMessage = (req, res, next, producer) => {
  * @param {Object} req - Body should contain name, dischargeDate
  * @param {Object} res - Restify Response Object
  * @param {function} next - function to call after response
+ * @param {Object} producer - KafkaProducer instance to publish message to
  */
-const sendDischargeMessage = (req, res, next) => {
+const sendDischargeMessage = (req, res, next, producer) => {
+  const message = {
+    body: {
+      'com.colinwren.Discharge': req.body
+    }
+  };
+  try {
+    producer.sendMessageToKafka(`discharge-${uuid()}`, message);
+  } catch (err) {
+    console.log(`error producing discharge message: ${err.message}`);
+  }
   next();
 };
 
@@ -38,8 +49,19 @@ const sendDischargeMessage = (req, res, next) => {
  * @param {Object} req - Body should contain nhsNumber, fromWard, toWard, transferDate
  * @param {Object} res - Restify Response Object
  * @param {function} next - function to call after response
+ * @param {Object} producer - KafkaProducer instance to publish message to
  */
-const sendTransferMessage = (req, res, next) => {
+const sendTransferMessage = (req, res, next, producer) => {
+  const message = {
+    body: {
+      'com.colinwren.Transfer': req.body
+    }
+  };
+  try {
+    producer.sendMessageToKafka(`transfer-${uuid()}`, message);
+  } catch (err) {
+    console.log(`error producing transfer message: ${err.message}`);
+  }
   next();
 };
 
