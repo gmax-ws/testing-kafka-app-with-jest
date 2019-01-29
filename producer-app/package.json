@@ -4,7 +4,7 @@
   "description": "An example producer app that on receiving a REST call puts a message on an Avro serialised message on a Kafka queue",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "babel-node src/index.js",
     "test": "jest",
     "generateDocs": "jsdoc ./src ./package.json",
     "openDocs": "open out/producer-app/1.0.0/index.html",

@@ -28,3 +28,17 @@ services:
       - zookeeper
     ports:
       - 8081:8081
+
+  producer-app:
+    image: kafka-test/producer:latest
+    environment:
+      - KAFKA_TOPIC=patient
+      - KAFKA_BROKER_HOST=kafka
+      - KAFKA_BROKER_PORT=9092
+      - KAFKA_SCHEMA_REGISTRY_HOST=schema-registry
+      - KAFKA_SCHEMA_REGISTRY_PORT=8081
+    depends_on:
+      - kafka
+      - schema-registry
+    ports:
+      - 8080:8080

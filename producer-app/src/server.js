@@ -1,6 +1,6 @@
 const extractValuesFromBody = (body, keys) => {
   const keyCheck = keys.filter((key) => {
-    return Object.prototype.hasOwnProperty.call(body, key) && typeof (body[key]) !== 'undefined';
+    return Object.prototype.hasOwnProperty.call(body, key) && !(typeof (body[key]) === 'undefined');
   });
   if (keyCheck.length !== keys.length) {
     throw new Error(`${keys.filter(item => !keyCheck.includes(item))} values not present in body`);
