@@ -16,3 +16,13 @@ most likely to do with `node-rdkafka` wanting to build `librdkafka` on installat
 A work around for this is:
 - run `brew install librdkafka` before running `npm install`
 - pass the `BUILD_LIBRDKAFKA=0` environment variable into the `npm install` (e.g. `BUILD_LIBRDKAFKA=0 npm install`)
+
+## Checking messages posted to Kafka
+You can check the messages being posted to Kafka with the following command.
+```
+kafka-avro-console-consumer --value-deserializer io.confluent.kafka.serializers.KafkaAvroDeserializer --key-deserializer org.apache.kafka.common.serialization.StringDeserializer --formatter io.confluent.kafka.formatter.AvroMessageFormatter --property print.key=true --property schema.registry.url=http://localhost:8081 --topic test --bootstrap-server localhost:9092
+
+```
+
+## Publishing schemas
+You can publish the schemas for the messages using the following command.

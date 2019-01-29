@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 /**
  * Send the admission details to the Kafka queue with Avro
  *
@@ -7,9 +8,13 @@
  * @param {Object} producer - KafkaProducer instance to publish message to
  */
 const sendAdmitMessage = (req, res, next, producer) => {
-  console.log('sending admit message');
+  const message = {
+    body: {
+      'com.colinwren.Admit': req.body
+    }
+  };
   try {
-    producer.sendMessageToKafka('admit', { test: 'message' });
+    producer.sendMessageToKafka(`admit-${uuid()}`, message);
   } catch (err) {
     console.log(`error producing message ${err.message}`);
   }

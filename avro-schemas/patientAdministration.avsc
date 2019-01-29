@@ -19,14 +19,14 @@
                     "doc": "Name of the Patient"
                 },
                 {
-                    "name": "wardCode",
-                    "type": "int",
+                    "name": "admittingWard",
+                    "type": "string",
                     "doc": "Code for the Ward the Patient is being admitted to"
                 },
                 {
                     "name": "admissionDate",
-                    "type": "long",
-                    "doc": "Unix Epoch timestamp in ms at which the Patient was Admitted"
+                    "type": "string",
+                    "doc": "date the Patient was Admitted in YYYY-MM-DDTHH:mm:SS:sssZ"
                 }
             ]
         },
@@ -42,8 +42,8 @@
                 },
                 {
                     "name": "dischargeDate",
-                    "type": "long",
-                    "doc": "Unix Epoch timestamp in ms at which the Patient was Discharged"
+                    "type": "string",
+                    "doc": "date the Patient was Discharged in YYYY-MM-DDTHH:mm:SS:sssZ"
                 }
             ]
         },
@@ -59,18 +59,18 @@
                 },
                 {
                     "name": "fromWardCode",
-                    "type": "int",
+                    "type": "string",
                     "doc": "Code for the Ward the Patient is being transferred from"
                 },
                 {
                     "name": "toWardCode",
-                    "type": "int",
+                    "type": "string",
                     "doc": "Code for the Ward the Patient is being transferred to"
                 },
                 {
                     "name": "transferDate",
-                    "type": "long",
-                    "doc": "Unix Epoch timestamp in ms at which the Patient was Transferred"
+                    "type": "string",
+                    "doc": "date the Patient was Transferred in YYYY-MM-DDTHH:mm:SS:sssZ"
                 }
             ]
         }
