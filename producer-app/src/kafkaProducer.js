@@ -1,3 +1,4 @@
+/** @module KafkaProducer */
 import KafkaAvro from 'kafka-avro';
 import { topic, kafkaBroker, schemaRegistry } from './config';
 

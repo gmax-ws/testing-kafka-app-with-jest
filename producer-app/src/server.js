@@ -1,3 +1,4 @@
+/** @module Server */
 const extractValuesFromBody = (body, keys) => {
   const keyCheck = keys.filter((key) => {
     return Object.prototype.hasOwnProperty.call(body, key) && !(typeof (body[key]) === 'undefined');

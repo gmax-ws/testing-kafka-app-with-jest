@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node src/index.js",
     "test": "jest",
-    "generateDocs": "jsdoc ./src ./package.json",
+    "generateDocs": "jsdoc ./src ./package.json -R README.md",
     "openDocs": "open out/producer-app/1.0.0/index.html",
     "docs": "npm run generateDocs && npm run openDocs",
     "lint": "eslint src"

@@ -1,3 +1,4 @@
+/** @module Messaging */
 import { v4 as uuid } from 'uuid';
 /**
  * Send the admission details to the Kafka queue with Avro
