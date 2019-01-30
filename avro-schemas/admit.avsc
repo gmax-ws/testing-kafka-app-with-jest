@@ -1,0 +1,27 @@
+{
+    "type": "record",
+    "namespace": "com.colinwren",
+    "name": "Admit",
+    "doc": "Avro Schema for patient admission messages",
+    "fields": [{
+            "name": "nhsNumber",
+            "type": "string",
+            "doc": "NHS Number for the Patient"
+        },
+        {
+            "name": "name",
+            "type": "string",
+            "doc": "Name of the Patient"
+        },
+        {
+            "name": "wardCode",
+            "type": "int",
+            "doc": "Code for the Ward the Patient is being admitted to"
+        },
+        {
+            "name": "admissionDate",
+            "type": "long",
+            "doc": "Unix Epoch timestamp in ms at which the Patient was Admitted"
+        }
+    ]
+}

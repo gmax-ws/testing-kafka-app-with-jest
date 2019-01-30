@@ -1,0 +1,79 @@
+{
+    "namespace": "com.colinwren",
+    "name": "PatientAdministation",
+    "doc": "Avro Schema for patient administation",
+    "type": [
+        {
+            "type": "record",
+            "namespace": "com.colinwren",
+            "name": "Admit",
+            "doc": "Avro Schema for patient admission messages",
+            "fields": [{
+                    "name": "nhsNumber",
+                    "type": "string",
+                    "doc": "NHS Number for the Patient"
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "doc": "Name of the Patient"
+                },
+                {
+                    "name": "admittingWard",
+                    "type": "string",
+                    "doc": "Code for the Ward the Patient is being admitted to"
+                },
+                {
+                    "name": "admissionDate",
+                    "type": "string",
+                    "doc": "date the Patient was Admitted in YYYY-MM-DDTHH:mm:SS:sssZ"
+                }
+            ]
+        },
+        {
+            "type": "record",
+            "namespace": "com.colinwren",
+            "name": "Discharge",
+            "doc": "Avro Schema for patient discharge messages",
+            "fields": [{
+                    "name": "nhsNumber",
+                    "type": "string",
+                    "doc": "NHS Number for the Patient"
+                },
+                {
+                    "name": "dischargeDate",
+                    "type": "string",
+                    "doc": "date the Patient was Discharged in YYYY-MM-DDTHH:mm:SS:sssZ"
+                }
+            ]
+        },
+        {
+            "type": "record",
+            "namespace": "com.colinwren",
+            "name": "Transfer",
+            "doc": "Avro Schema for patient transfer messages",
+            "fields": [{
+                    "name": "nhsNumber",
+                    "type": "string",
+                    "doc": "NHS Number for the Patient"
+                },
+                {
+                    "name": "fromWardCode",
+                    "type": "string",
+                    "doc": "Code for the Ward the Patient is being transferred from"
+                },
+                {
+                    "name": "toWardCode",
+                    "type": "string",
+                    "doc": "Code for the Ward the Patient is being transferred to"
+                },
+                {
+                    "name": "transferDate",
+                    "type": "string",
+                    "doc": "date the Patient was Transferred in YYYY-MM-DDTHH:mm:SS:sssZ"
+                }
+            ]
+        }
+
+    ]
+}
