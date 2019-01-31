@@ -24,7 +24,7 @@ describe('KafkaAvroConsumer', () => {
   describe('getKafkaConsumer', () => {
     const testClient = {
       getConsumer: jest.fn(() => {
-        return new Promise(resolve => resolve());
+        return new Promise((resolve) => resolve());
       })
     };
     it('Calls the getConsumer() function on the passed client', async () => {
@@ -32,21 +32,21 @@ describe('KafkaAvroConsumer', () => {
       expect(testClient.getConsumer).toBeCalled();
     });
   });
-  // describe('connectKafkaConsumer', () => {
-  //   const testConsumer = {
-  //     on: jest.fn(async () => new Promise(resolve => resolve())),
-  //     connect: jest.fn(async () => new Promise(resolve => resolve()))
-  //   };
-  //   beforeAll(async () => {
-  //     await KafkaAvroConsumer.connectKafkaConsumer(testConsumer);
-  //   });
-  //   it('Sets up a listener for the ready message', () => {
-  //     expect(testConsumer.on.mock.calls[0][0]).toBe('ready');
-  //   });
-  //   it('Connects the consumer', () => {
-  //     expect(testConsumer.connect).toBeCalled();
-  //   });
-  // });
+  describe('connectKafkaConsumer', () => {
+    const testConsumer = {
+      on: jest.fn((eventName, callback) => callback()),
+      connect: jest.fn((data, callback) => callback())
+    };
+    beforeAll(async () => {
+      await KafkaAvroConsumer.connectKafkaConsumer(testConsumer);
+    });
+    it('Sets up a listener for the ready message', () => {
+      expect(testConsumer.on.mock.calls[0][0]).toBe('ready');
+    });
+    it('Connects the consumer', () => {
+      expect(testConsumer.connect).toBeCalled();
+    });
+  });
   describe('constructor', () => {
     let getKafkaClientSpy;
     let initialiseKafkaClientSpy;

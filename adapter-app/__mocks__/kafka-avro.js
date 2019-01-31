@@ -1,6 +1,6 @@
 export const initMock = jest.fn().mockResolvedValue();
-export const consumerOnMock = jest.fn().mockResolvedValue();
-export const consumerConnectMock = jest.fn().mockResolvedValue();
+export const consumerOnMock = jest.fn((eventName, callback) => callback());
+export const consumerConnectMock = jest.fn((data, callback) => callback());
 
 const mock = jest.fn().mockImplementation(() => {
   return {

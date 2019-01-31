@@ -11,7 +11,7 @@ services:
     image: confluentinc/cp-kafka:5.1.0
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://192.168.1.166:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${HOST_IP}:9092
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
     depends_on:
       - zookeeper
@@ -43,17 +43,17 @@ services:
     ports:
       - 8080:8080
 
-  adapter-app:
-    image: kakfa-test/adapter:latest
-    environment:
-      - INBOUND_KAFKA_TOPIC=patient
-      - INBOUND_KAFKA_BROKER_HOST=kafka
-      - INBOUND_KAFKA_BROKER_PORT=9092
-      - INBOUND_KAFKA_SCHEMA_REGISTRY_HOST=schema-registry
-      - INBOUND_KAFKA_SCHEMA_REGISTRY_PORT=8081
-      - OUTBOUND_KAFKA_TOPIC=patientAdministration
-      - OUTBOUND_KAFKA_BROKER_HOST=kafka
-      - OUTBOUND_KAFKA_BROKER_PORT=9092
-    depends_on:
-      - kafka
-      - schema-registry
+#  adapter-app:
+#    image: kakfa-test/adapter:latest
+#    environment:
+#      - INBOUND_KAFKA_TOPIC=patient
+#      - INBOUND_KAFKA_BROKER_HOST=kafka
+#      - INBOUND_KAFKA_BROKER_PORT=9092
+#      - INBOUND_KAFKA_SCHEMA_REGISTRY_HOST=schema-registry
+#      - INBOUND_KAFKA_SCHEMA_REGISTRY_PORT=8081
+#      - OUTBOUND_KAFKA_TOPIC=patientAdministration
+#      - OUTBOUND_KAFKA_BROKER_HOST=kafka
+#      - OUTBOUND_KAFKA_BROKER_PORT=9092
+#    depends_on:
+#      - kafka
+#      - schema-registry
