@@ -1,4 +1,9 @@
-import { KafkaClient, Producer, sendMock, onMock } from 'kafka-node';
+import {
+  KafkaClient,
+  Producer,
+  sendMock,
+  onMock
+} from 'kafka-node';
 import KafkaProducer from '../KafkaProducer';
 import { outboundTopic } from '../config';
 
@@ -17,6 +22,9 @@ describe('KafkaProducer', () => {
       expect(Producer).toBeCalled();
       expect(onMock).toBeCalled();
     });
+    it('Throws an error if client isnt passed', async () => {
+      await expect(KafkaProducer.getKafkaProducer()).rejects.toThrow();
+    });
   });
   describe('constructor', () => {
     let getKafkaClientSpy;
@@ -24,7 +32,7 @@ describe('KafkaProducer', () => {
     beforeEach(async () => {
       getKafkaClientSpy = jest.spyOn(KafkaProducer, 'getKafkaClient');
       getKafkaProducerSpy = jest.spyOn(KafkaProducer, 'getKafkaProducer');
-      const testProducer = await new KafkaProducer();
+      await new KafkaProducer();
     });
     it('calls getKafkaClient', () => {
       expect(getKafkaClientSpy).toBeCalled();
@@ -39,11 +47,19 @@ describe('KafkaProducer', () => {
       producer.sendMessageToKafka([{ test: 'message' }]);
     });
     it('Uses the topic defined in config', () => {
-      expect(sendMock.mock.calls[0][0].length).toBe(1);
+      expect(sendMock.mock.calls[0][0]).toHaveLength(1);
       expect(sendMock.mock.calls[0][0][0]).toEqual({
         topic: outboundTopic,
-        messages: [ { test: 'message' }]
+        messages: [{ test: 'message' }]
       });
+    });
+  });
+  describe('handleMessageSent', () => {
+    it('logs errors to console', () => {
+      const logMock = jest.fn();
+      global.console.log = logMock;
+      KafkaProducer.handleMessageSent({ message: 'Oh Noes!' }, {});
+      expect(logMock.mock.calls[0][0]).toBe('Error when sending message: Oh Noes!');
     });
   });
 });

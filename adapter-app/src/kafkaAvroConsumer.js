@@ -26,7 +26,7 @@ class KafkaAvroConsumer {
     return new KafkaAvro({
       kafkaBroker: inboundKafkaBroker,
       schemaRegistry: inboundSchemaRegistry,
-      topics: [ inboundTopic ],
+      topics: [inboundTopic],
       fetchAllVersions: true,
       wrapUnions: false
     });
@@ -39,6 +39,9 @@ class KafkaAvroConsumer {
    * @return {void}
    */
   static async initialiseKafkaClient(client) {
+    if (typeof (client) === 'undefined') {
+      throw new Error('Client not defined');
+    }
     await client.init();
   }
 
@@ -49,6 +52,9 @@ class KafkaAvroConsumer {
    * @return {Consumer} Consumer to get messages with
    */
   static async getKafkaConsumer(client) {
+    if (typeof (client) === 'undefined') {
+      throw new Error('Client not defined');
+    }
     return client.getConsumer({
       'group.id': `${inboundTopic}-consumer`,
       'socket.keepalive.enable': true,
@@ -62,6 +68,9 @@ class KafkaAvroConsumer {
    * @returns {Promise<*>} The connected consumer
    */
   static async connectKafkaConsumer(consumer) {
+    if (typeof (consumer) === 'undefined') {
+      throw new Error('Consumer not defined');
+    }
     return new Promise((resolve, reject) => {
       consumer.on('ready', () => resolve(consumer));
       consumer.connect({}, (err) => {

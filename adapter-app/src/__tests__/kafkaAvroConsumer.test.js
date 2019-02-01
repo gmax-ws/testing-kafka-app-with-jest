@@ -1,4 +1,4 @@
-import KafkaAvro, { consumerOnMock, consumerConnectMock } from 'kafka-avro';
+import KafkaAvro from 'kafka-avro';
 import KafkaAvroConsumer from '../kafkaAvroConsumer';
 
 jest.mock('kafka-avro');
@@ -20,6 +20,9 @@ describe('KafkaAvroConsumer', () => {
       await KafkaAvroConsumer.initialiseKafkaClient(testClient);
       expect(testClient.init).toBeCalled();
     });
+    it('Throws an error if no client is passed', async () => {
+      await expect(KafkaAvroConsumer.initialiseKafkaClient()).rejects.toThrow();
+    });
   });
   describe('getKafkaConsumer', () => {
     const testClient = {
@@ -30,6 +33,9 @@ describe('KafkaAvroConsumer', () => {
     it('Calls the getConsumer() function on the passed client', async () => {
       await KafkaAvroConsumer.getKafkaConsumer(testClient);
       expect(testClient.getConsumer).toBeCalled();
+    });
+    it('Throws an error if no client is passed', async () => {
+      await expect(KafkaAvroConsumer.getKafkaConsumer()).rejects.toThrow();
     });
   });
   describe('connectKafkaConsumer', () => {
@@ -45,6 +51,9 @@ describe('KafkaAvroConsumer', () => {
     });
     it('Connects the consumer', () => {
       expect(testConsumer.connect).toBeCalled();
+    });
+    it('Throws an error if no consumer is passed', async () => {
+      await expect(KafkaAvroConsumer.connectKafkaConsumer()).rejects.toThrow();
     });
   });
   describe('constructor', () => {

@@ -31,6 +31,9 @@ class KafkaProducer {
    * @return {Producer} Producer to send messages with
    */
   static async getKafkaProducer(client) {
+    if (typeof (client) === 'undefined') {
+      throw new Error('Client not defined');
+    }
     return new Promise((resolve, reject) => {
       const producer = new Producer(client);
       producer.on('ready', (err) => {
@@ -49,7 +52,7 @@ class KafkaProducer {
    * @param {Object} err - Error thrown when failing to send message
    * @param {Object} data - Data sent
    */
-  static handleMessageSent(err, data) {
+  static handleMessageSent(err) {
     if (err) {
       console.log(`Error when sending message: ${err.message}`);
     }

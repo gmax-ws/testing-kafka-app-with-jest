@@ -14,7 +14,7 @@ new KafkaAvroConsumer().then((inboundConsumer) => {
         const baseMessage = {
           nhsNumber: messageData.body['com.colinwren.Admit'].nhsNumber
         };
-        const admitMessage = Object.assign({}, baseMessage, { type: 'admit', data: messageData.body['com.colinwren.Admit']});
+        const admitMessage = Object.assign({}, baseMessage, { type: 'admit', data: messageData.body['com.colinwren.Admit'] });
         const transferMessage = Object.assign({}, baseMessage, { type: 'transfer', data: { fromWard: null, toWard: messageData.body['com.colinwren.Admit'].admittingWard, transferDate: messageData.body['com.colinwren.Admit'].admissionDate } });
         producer.sendMessageToKafka([admitMessage, transferMessage]);
       }
@@ -22,7 +22,7 @@ new KafkaAvroConsumer().then((inboundConsumer) => {
         const baseMessage = {
           nhsNumber: messageData.body['com.colinwren.Discharge'].nhsNumber
         };
-        const dischargeMessage = Object.assign({}, baseMessage, { type: 'discharge', data: messageData.body['com.colinwren.Discharge']});
+        const dischargeMessage = Object.assign({}, baseMessage, { type: 'discharge', data: messageData.body['com.colinwren.Discharge'] });
         const transferMessage = Object.assign({}, baseMessage, { type: 'transfer', data: { fromWard: null, toWard: null, transferDate: messageData.body['com.colinwren.Discharge'].dischargeDate } });
         producer.sendMessageToKafka([dischargeMessage, transferMessage]);
       }
