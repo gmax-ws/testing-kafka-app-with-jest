@@ -4,7 +4,7 @@ import { outboundKafkaBroker, outboundTopic } from './config';
 
 
 /**
-* A class for setting up a Avro Kafka Producer and sending messages with it.
+* A class for setting up a Kafka Producer and sending messages with it.
 */
 class KafkaProducer {
   constructor() {
@@ -16,18 +16,18 @@ class KafkaProducer {
   }
 
   /**
-   * @static getKafkaClient - Use kafka-avro to create a Avro Kafka client
+   * @static getKafkaClient - Use kafka-node to create a Kafka client
    *
-   * @return {KafkaClient} unitialised Avro Kafka client
+   * @return {KafkaClient} Kafka client
    */
   static getKafkaClient() {
     return new KafkaClient({ kafkaHost: outboundKafkaBroker });
   }
 
   /**
-   * @static - get a Producer for the provided KafkaAvro client
+   * @static - get a Producer for the provided KafkaClient
    *
-   * @param  {KafkaAvro} client Initialised KafkaAvro client
+   * @param  {KafkaClient} Kafka client
    * @return {Producer} Producer to send messages with
    */
   static async getKafkaProducer(client) {
@@ -66,10 +66,13 @@ class KafkaProducer {
    * @return {void}
    */
   sendMessageToKafka(messages) {
-    messages.map((item) => console.log(item));
+    const messagesToSend = messages.map((item) => {
+      console.log(item);
+      return JSON.stringify(item);
+    });
     const payload = {
       topic: outboundTopic,
-      messages
+      messages: messagesToSend
     };
     this.producer.send([payload], KafkaProducer.handleMessageSent);
   }

@@ -57,3 +57,12 @@ services:
     depends_on:
       - kafka
       - schema-registry
+
+  consumer-app:
+    image: kafka-test/consumer:latest
+    environment:
+      - TOPIC=patientAdministration
+      - KAFKA_BROKER_HOST=kafka
+      - KAFKA_BROKER_PORT=9092
+    depends_on:
+      - kafka

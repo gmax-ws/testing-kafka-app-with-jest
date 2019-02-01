@@ -17,7 +17,7 @@ describe('KafkaProducer', () => {
     });
   });
   describe('getKafkaProducer', () => {
-    it('Calls the getProducer() function on the passed client', async () => {
+    it('Creates an instance of Producer with the passed client', async () => {
       await KafkaProducer.getKafkaProducer(jest.fn());
       expect(Producer).toBeCalled();
       expect(onMock).toBeCalled();
@@ -50,7 +50,7 @@ describe('KafkaProducer', () => {
       expect(sendMock.mock.calls[0][0]).toHaveLength(1);
       expect(sendMock.mock.calls[0][0][0]).toEqual({
         topic: outboundTopic,
-        messages: [{ test: 'message' }]
+        messages: ['{"test":"message"}']
       });
     });
   });
