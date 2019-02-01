@@ -1,4 +1,4 @@
-import { KafkaClient, Producer, sendMock } from 'kafka-node';
+import { KafkaClient, Producer, sendMock, onMock } from 'kafka-node';
 import KafkaProducer from '../KafkaProducer';
 import { outboundTopic } from '../config';
 
@@ -15,15 +15,16 @@ describe('KafkaProducer', () => {
     it('Calls the getProducer() function on the passed client', async () => {
       await KafkaProducer.getKafkaProducer(jest.fn());
       expect(Producer).toBeCalled();
+      expect(onMock).toBeCalled();
     });
   });
   describe('constructor', () => {
     let getKafkaClientSpy;
     let getKafkaProducerSpy;
-    beforeEach(() => {
+    beforeEach(async () => {
       getKafkaClientSpy = jest.spyOn(KafkaProducer, 'getKafkaClient');
       getKafkaProducerSpy = jest.spyOn(KafkaProducer, 'getKafkaProducer');
-      const testProducer = new KafkaProducer();
+      const testProducer = await new KafkaProducer();
     });
     it('calls getKafkaClient', () => {
       expect(getKafkaClientSpy).toBeCalled();
@@ -34,11 +35,12 @@ describe('KafkaProducer', () => {
   });
   describe('sendMessageToKafka', () => {
     beforeAll(async () => {
-      const producer = new KafkaProducer();
-      producer.sendMessageToKafka({ test: 'message' });
+      const producer = await new KafkaProducer();
+      producer.sendMessageToKafka([{ test: 'message' }]);
     });
     it('Uses the topic defined in config', () => {
-      expect(sendMock.mock.calls[0][0]).toEqual({
+      expect(sendMock.mock.calls[0][0].length).toBe(1);
+      expect(sendMock.mock.calls[0][0][0]).toEqual({
         topic: outboundTopic,
         messages: [ { test: 'message' }]
       });
