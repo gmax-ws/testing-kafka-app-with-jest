@@ -9,12 +9,12 @@
             "doc": "NHS Number for the Patient"
         },
         {
-            "name": "fromWardCode",
+            "name": "fromWard",
             "type": "int",
             "doc": "Code for the Ward the Patient is being transferred from"
         },
         {
-            "name": "toWardCode",
+            "name": "toWard",
             "type": "int",
             "doc": "Code for the Ward the Patient is being transferred to"
         },
