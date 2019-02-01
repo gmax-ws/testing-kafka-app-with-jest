@@ -23,7 +23,7 @@ new KafkaAvroConsumer().then((inboundConsumer) => {
           nhsNumber: messageData.body['com.colinwren.Discharge'].nhsNumber
         };
         const dischargeMessage = Object.assign({}, baseMessage, { type: 'discharge', data: messageData.body['com.colinwren.Discharge']});
-        const transferMessage = Object.assign({}, baseMessage, { type: 'transfer', data: { fromWard: null, toWard: null, transferDate: messageData.body['com.colinwren.Discharge'].admissionDate } });
+        const transferMessage = Object.assign({}, baseMessage, { type: 'transfer', data: { fromWard: null, toWard: null, transferDate: messageData.body['com.colinwren.Discharge'].dischargeDate } });
         producer.sendMessageToKafka([dischargeMessage, transferMessage]);
       }
       if (Object.prototype.hasOwnProperty.call(messageData.body, 'com.colinwren.Transfer')) {
