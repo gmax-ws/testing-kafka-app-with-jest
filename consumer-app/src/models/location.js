@@ -15,7 +15,7 @@ const Location = (orm, dataTypes) => {
     }
   },
   {
-    freezeTableName: true,
+    freezeTableName: true
   });
 
   LocationModel.associate = (models) => {
@@ -23,7 +23,6 @@ const Location = (orm, dataTypes) => {
   };
 
   return LocationModel;
-
 };
 
 export default Location;

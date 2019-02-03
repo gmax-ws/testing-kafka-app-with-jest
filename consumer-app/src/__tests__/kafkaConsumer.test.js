@@ -1,7 +1,6 @@
 import {
   KafkaClient,
-  Consumer,
-  onMock
+  Consumer
 } from 'kafka-node';
 import KafkaConsumer from '../KafkaConsumer';
 
@@ -29,7 +28,8 @@ describe('KafkaConsumer', () => {
     beforeEach(() => {
       getKafkaClientSpy = jest.spyOn(KafkaConsumer, 'getKafkaClient');
       getKafkaConsumerSpy = jest.spyOn(KafkaConsumer, 'getKafkaConsumer');
-      new KafkaConsumer();
+      const consumer = new KafkaConsumer();
+      expect(consumer).not.toBe(null);
     });
     it('calls getKafkaClient', () => {
       expect(getKafkaClientSpy).toBeCalled();

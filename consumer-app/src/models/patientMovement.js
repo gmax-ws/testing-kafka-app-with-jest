@@ -16,7 +16,6 @@ const PatientMovement = (orm, dataTypes) => {
   };
 
   return PatientMovementModel;
-
 };
 
 export default PatientMovement;
