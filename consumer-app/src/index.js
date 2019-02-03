@@ -37,7 +37,7 @@ db.sequelize.sync().then(() => {
     queue.push(message);
   });
 
-  apiServer.listen(8082, () => {
+  apiServer.listen(8080, () => {
     console.log('Server set up');
   });
 });
