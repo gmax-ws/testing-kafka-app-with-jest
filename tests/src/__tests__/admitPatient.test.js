@@ -8,12 +8,13 @@ import {
   findOutboundAdmitMessage,
   findInboundAdmitMessage,
   findInboundTransferMessage,
-  formatDate
+  formatDate,
+  sleep
 } from '../common';
 import { v4 as uuid4 } from 'uuid';
-import { config } from '../config';
 
 describe('Integration with Patient Administration System', () => {
+
   let producerAppOutboundMessages = [];
   let consumerAppInboundMessages = [];
   let producerAppOutboundConsumer;
@@ -26,16 +27,17 @@ describe('Integration with Patient Administration System', () => {
     consumerAppInboundOffset = offset;
     producerAppOutboundConsumer = await getProducerAppOutboundQueueListener();
 
+    producerAppOutboundConsumer.on('data', data => {
+      console.log('Got message from patient queue');
+      producerAppOutboundMessages.push(data.parsed);
+    });
     consumerAppInboundConsumer.on('message', (message) => {
+      console.log('Got message from patientAdministration queue');
       consumerAppInboundMessages.push(JSON.parse(message.value));
     });
 
-    producerAppOutboundConsumer.subscribe([config.producerApp.outboundQueue.topic]);
-    producerAppOutboundConsumer.consume();
-    producerAppOutboundConsumer.on('data', (data) => {
-      producerAppOutboundMessages.push(data.parsed);
-    });
-  });
+    await sleep(5);
+  }, 6000);
 
   afterAll(() => {
     consumerAppInboundConsumer.close();
@@ -49,34 +51,51 @@ describe('Integration with Patient Administration System', () => {
     let consumerAppPatientRecord;
     const nhsNumber = uuid4();
     const wardCode = '666';
-    const admissionDate = new Date();
+    let admissionDate;
     const patientName = 'Admit Test';
 
     beforeAll(async () => {
       consumerAppInboundMessages = [];
       producerAppOutboundMessages = [];
       await updateConsumerOffset(consumerAppInboundConsumer, consumerAppInboundOffset);
-
+      admissionDate = new Date();
       await admitPatient(nhsNumber, wardCode, patientName);
-      // producerAppAdmitMessage = await eventualQueueMember(
-      //   producerAppOutboundMessages,
-      //   nhsNumber,
-      //   findOutboundAdmitMessage,
-      //   50
-      // );
+      producerAppAdmitMessage = await eventualQueueMember(
+        producerAppOutboundMessages,
+        nhsNumber,
+        findOutboundAdmitMessage,
+        60
+      );
       adapterAppAdmitMessage = await eventualQueueMember(
         consumerAppInboundMessages,
         nhsNumber,
         findInboundAdmitMessage,
-        10
+        60
       );
       adapterAppTransferMessage = await eventualQueueMember(
         consumerAppInboundMessages,
         nhsNumber,
         findInboundTransferMessage,
-        10
+        60
       );
-    }, 30000);
+    }, 180000);
+    describe('Producer App\'s com.colinwren.Admit Message', () => {
+      it('Has the Admit body attribute', () => {
+        expect(Object.hasOwnProperty.call(producerAppAdmitMessage.body, 'com.colinwren.Admit')).toBe(true);
+      });
+      it('Has the patient\'s NHS Number set correctly', () => {
+        expect(producerAppAdmitMessage.body['com.colinwren.Admit'].nhsNumber).toBe(nhsNumber);
+      });
+      it('Has the patient\'s Name', () => {
+        expect(producerAppAdmitMessage.body['com.colinwren.Admit'].name).toBe(patientName);
+      });
+      it('Has the admitting ward', () => {
+        expect(producerAppAdmitMessage.body['com.colinwren.Admit'].admittingWard).toBe(wardCode);
+      });
+      it('Has the correct admissionDate', () => {
+        expect(producerAppAdmitMessage.body['com.colinwren.Admit'].admissionDate).toBe(formatDate(admissionDate));
+      });
+    });
     describe('Adapter App\'s Admit Message', () => {
       it('Has the admit type', () => {
         expect(adapterAppAdmitMessage.type).toBe('admit');
@@ -112,5 +131,5 @@ describe('Integration with Patient Administration System', () => {
         expect(adapterAppTransferMessage.data.transferDate).toBe(formatDate(admissionDate));
       });
     });
-  }, 30000);
-}, 30000);
+  }, 180000);
+}, 180000);

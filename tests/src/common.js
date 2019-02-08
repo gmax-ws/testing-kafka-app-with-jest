@@ -50,7 +50,7 @@ export const eventualApiEntry = async (url, options, attempts = 5) => {
  * @returns {Promise<*>}
  */
 export const eventualQueueMember = async (haystack, needle, filterFunction, attempts = 5) => {
-  console.log(`eventualQueueMember - haystack: ${JSON.stringify(haystack)}`);
+  console.log(`eventualQueueMember - haystack: ${JSON.stringify(haystack)} using ${filterFunction.name}`);
   const hits = filterFunction(haystack, needle);
   if (hits.length > 0) {
     return hits[0];
@@ -90,7 +90,7 @@ export const getOffset = (offset, topic) => {
  */
 export const updateConsumerOffset = async (consumer, offset) => {
   const newOffset = await getOffset(offset, config.consumerApp.inboundQueue.topic);
-  consumer.setOffset(config.consumerApp.inboundQueue.topic, newOffset, 0);
+  consumer.setOffset(config.consumerApp.inboundQueue.topic, 0, newOffset);
 };
 
 /**
@@ -170,8 +170,7 @@ export const getKafkaAvroConsumer = async (client) => {
   const consumer = await client.getConsumer({
     'group.id': `end-to-end-test-${uuid4()}`,
     'socket.keepalive.enable': true,
-    'enable.auto.commit': false,
-    'auto.offset.reset': 'latest'
+    'enable.auto.commit': false
   });
   return new Promise((resolve, reject) => {
     consumer.on('ready', () => resolve(consumer));
@@ -192,7 +191,10 @@ export const getKafkaAvroConsumer = async (client) => {
  */
 export const getProducerAppOutboundQueueListener = async () => {
   const client = await getKafkaAvroClient();
-  return getKafkaAvroConsumer(client);
+  const consumer = await getKafkaAvroConsumer(client);
+  consumer.subscribe([config.producerApp.outboundQueue.topic]);
+  consumer.consume();
+  return consumer;
 };
 
 export const formatDate = (date) => {

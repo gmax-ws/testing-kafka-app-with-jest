@@ -76,6 +76,7 @@ class KafkaProducer {
    * @return {void}
    */
   sendMessageToKafka(key, value) {
+    console.log(`Sending ${key}:${JSON.stringify(value)} to ${topic}`);
     this.producer.produce(topic, -1, value, key);
   }
 }
