@@ -66,18 +66,16 @@ export const getPatient = async (req, res, next) => {
     include: [
       {
         model: db.spell,
-        limit: 1,
         where: { endDate: null },
         include: [
           {
-            model: db.patientMovement,
-            limit: 1,
-            order: [
-              ['movementDate', 'DESC']
-            ]
+            model: db.patientMovement
           }
         ]
       }
+    ],
+    order: [
+      [ db.spell, db.patientMovement, 'id', 'DESC']
     ]
   });
   res.send(200, patient);
