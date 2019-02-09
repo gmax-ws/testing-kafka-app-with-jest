@@ -12,6 +12,7 @@ import {
   sleep
 } from '../common';
 import { v4 as uuid4 } from 'uuid';
+import { config } from '../config';
 
 describe('Integration with Patient Administration System', () => {
 
@@ -49,6 +50,11 @@ describe('Integration with Patient Administration System', () => {
     let adapterAppAdmitMessage;
     let adapterAppTransferMessage;
     let consumerAppPatientRecord;
+    let consumerAppWardRecord;
+    let consumerAppSpellRecord;
+    let consumerAppPatientMovementRecord;
+    let consumerAppPatientList;
+    let consumerAppWardList;
     const nhsNumber = uuid4();
     const wardCode = '666';
     let admissionDate;
@@ -64,21 +70,43 @@ describe('Integration with Patient Administration System', () => {
         producerAppOutboundMessages,
         nhsNumber,
         findOutboundAdmitMessage,
-        60
+        5
       );
       adapterAppAdmitMessage = await eventualQueueMember(
         consumerAppInboundMessages,
         nhsNumber,
         findInboundAdmitMessage,
-        60
+        5
       );
       adapterAppTransferMessage = await eventualQueueMember(
         consumerAppInboundMessages,
         nhsNumber,
         findInboundTransferMessage,
-        60
+        5
       );
-    }, 180000);
+      consumerAppPatientRecord = await eventualApiEntry(
+        `${config.consumerApp.api.host}/patients/${nhsNumber}`,
+        {},
+        5
+      );
+      consumerAppWardRecord = await eventualApiEntry(
+        `${config.consumerApp.api.host}/wards/${wardCode}`,
+        {},
+        5
+      );
+      consumerAppPatientList = await eventualApiEntry(
+        `${config.consumerApp.api.host}/patients`,
+        {},
+        5
+      );
+      consumerAppWardList = await eventualApiEntry(
+        `${config.consumerApp.api.host}/wards`,
+        {},
+        5
+      );
+      consumerAppSpellRecord = consumerAppPatientRecord.spells[0];
+      consumerAppPatientMovementRecord = consumerAppSpellRecord.patientMovements[0];
+    }, 35000);
     describe('Producer App\'s com.colinwren.Admit Message', () => {
       it('Has the Admit body attribute', () => {
         expect(Object.hasOwnProperty.call(producerAppAdmitMessage.body, 'com.colinwren.Admit')).toBe(true);
@@ -131,5 +159,67 @@ describe('Integration with Patient Administration System', () => {
         expect(adapterAppTransferMessage.data.transferDate).toBe(formatDate(admissionDate));
       });
     });
-  }, 180000);
-}, 180000);
+    describe('Consumer App\'s Patient Resource API Endpoint', () => {
+      it('Has the patient\'s name', () => {
+        expect(consumerAppPatientRecord.name).toBe(patientName);
+      });
+      it('Has the patient\'s NHS Number', () => {
+        expect(consumerAppPatientRecord.nhsNumber).toBe(nhsNumber);
+      });
+      it('Has the patient\'s spell', () => {
+        expect(consumerAppPatientRecord.spells).toHaveLength(1);
+      });
+    });
+    describe('Spell object in Patient Resource API Endpoint response', () => {
+      it('Has the startDate set to the admissionDate of the patient', () => {
+        expect(consumerAppSpellRecord.startDate).toBe(formatDate(admissionDate));
+      });
+      it('Has no endDate as the spell has not ended', () => {
+        expect(consumerAppSpellRecord.endDate).toBe(null);
+      });
+      it('Has a list of patientMovements for that spell', () => {
+        expect(consumerAppSpellRecord.patientMovements).toHaveLength(1);
+      });
+      it('Has the patientId set to the patient\'s record id', () => {
+        expect(consumerAppSpellRecord.patientId).toBe(consumerAppPatientRecord.id);
+      });
+    });
+    describe('PatientMovement object in Patient Resource API Endpoint response', () => {
+      it('Has the movementDate set to the admissionDate of the patient', () => {
+        expect(consumerAppPatientMovementRecord.movementDate).toBe(formatDate(admissionDate));
+      });
+      it('Has the locationId set to the ward the patient is admitted to', () => {
+        expect(consumerAppPatientMovementRecord.locationId).toBe(consumerAppWardRecord.id);
+      });
+      it('Has the spellId set to the patient\'s spell', () => {
+        expect(consumerAppPatientMovementRecord.spellId).toBe(consumerAppSpellRecord.id);
+      });
+    });
+    describe('Consumer App\'s Patient List API Endpoint', () => {
+      it('Contains the admitted patient', () => {
+        const patientIds = consumerAppPatientList.map((item) => item.nhsNumber);
+        expect(patientIds.includes(nhsNumber)).toBe(true);
+      });
+    });
+    describe('Consumer App\'s Ward List API Endpoint', () => {
+      it('Contains the ward the patient is admitted to', () => {
+        const wardCodes = consumerAppWardList.map((item) => item.code);
+        expect(wardCodes.includes(wardCode)).toBe(true);
+      });
+    });
+    describe('Consumer App\'s Ward Resource API Endpoint', () => {
+      it('Has the name set to a mix between the location type and the code', () => {
+        expect(consumerAppWardRecord.name).toBe(`Ward#${wardCode}`);
+      });
+      it('Has the location type set to ward', () => {
+        expect(consumerAppWardRecord.type).toBe('ward');
+      });
+      it('Has the ward code set correctly', () => {
+        expect(consumerAppWardRecord.code).toBe(wardCode);
+      });
+      it('Has the patient movements within the ward', () => {
+        expect(consumerAppWardRecord.patientMovements.length).toBeGreaterThan(0);
+      });
+    });
+  }, 35000);
+}, 35000);
