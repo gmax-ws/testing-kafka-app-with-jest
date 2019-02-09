@@ -8,7 +8,7 @@ const getEnvVar = (key, safeDefault) => {
 export const config = {
   producerApp: {
     api: {
-      host: getEnvVar('PRODUCER_APP_API_HOST', 'http://localhost:8085')
+      host: getEnvVar('PRODUCER_APP_API_HOST', 'http://localhost:8080')
     },
     outboundQueue: {
       host: getEnvVar('PRODUCER_APP_OUTBOUND_HOST', 'localhost:9092'),
