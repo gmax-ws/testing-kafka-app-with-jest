@@ -2,6 +2,31 @@
 import db from './models';
 
 /**
+ * Format the date into YYYY-MM-DD HH:mm:SS format
+ *
+ * @param date
+ * @returns {string}
+ */
+const formatDate = (date) => {
+  return date.getFullYear() + '-' +
+    ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+    ('0' + date.getDate()).slice(-2) + ' ' +
+    ('0' + date.getHours()).slice(-2) + ':' +
+    ('0' + date.getMinutes()).slice(-2) + ':' +
+    ('0' + date.getSeconds()).slice(-2) + '.000 +00:00';
+};
+
+/**
+ * Convert the YYYY-MM-DDTHH:mm:SS.sssZ date to an actual date object
+ * @param rawDateString
+ * @returns {Date}
+ */
+const convertDate = (rawDateString) => {
+  const rawDate = new Date(rawDateString);
+  return formatDate(rawDate);
+};
+
+/**
  * Process the admit message from the Kafka queue and create patient and spell if they don't exist.
  *
  * @param {Object} message - Admit message
@@ -20,7 +45,7 @@ export const admitPatient = async (message) => {
         patientId: patients[0].dataValues.id
       },
       defaults: {
-        startDate: message.data.admissionDate
+        startDate: convertDate(message.data.admissionDate)
       }
     });
     console.log(`Created Spell #${spells[0].dataValues.id} for Patient #${patients[0].dataValues.id}`);
@@ -48,7 +73,7 @@ export const dischargePatient = async (message) => {
       }
     });
     console.log(`Found Spell #${spell.dataValues.id} for Patient #${patient.dataValues.id}`);
-    spell.endDate = message.data.dischargeDate;
+    spell.endDate = convertDate(message.data.dischargeDate);
     await spell.save();
     console.log(`Updated endDate for Spell #${spell.dataValues.id}`);
   } catch (err) {
@@ -98,7 +123,7 @@ export const transferPatient = async (message) => {
       const transfer = await db.patientMovement.create({
         spellId: spell.dataValues.id,
         locationId: toLocations[0].dataValues.id,
-        movementDate: message.data.transferDate
+        movementDate: convertDate(message.data.transferDate)
       });
       console.log(`Created patientMovement#${transfer.dataValues.id}`);
     }
