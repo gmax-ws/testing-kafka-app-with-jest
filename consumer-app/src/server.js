@@ -26,7 +26,7 @@ export const listWards = async (req, res, next) => {
 export const getWard = async (req, res, next) => {
   const ward = await db.location.findOne(
     {
-      where: { id: req.params.id, type: 'ward' },
+      where: { code: req.params.wardCode, type: 'ward' },
       include: [
         {
           model: db.patientMovement
@@ -62,7 +62,7 @@ export const listPatients = async (req, res, next) => {
  */
 export const getPatient = async (req, res, next) => {
   const patient = await db.patient.findOne({
-    where: { id: req.params.id },
+    where: { nhsNumber: req.params.nhsNumber },
     include: [
       {
         model: db.spell,

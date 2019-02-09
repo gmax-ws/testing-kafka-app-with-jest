@@ -13,9 +13,9 @@ import { processMessage } from './messageProcessing';
 // set up the Server
 const apiServer = restify.createServer();
 apiServer.get('/wards', listWards);
-apiServer.get('/wards/:id', getWard);
+apiServer.get('/wards/:wardCode', getWard);
 apiServer.get('/patients', listPatients);
-apiServer.get('/patients/:id', getPatient);
+apiServer.get('/patients/:nhsNumber', getPatient);
 
 
 const consumer = new KafkaConsumer();
