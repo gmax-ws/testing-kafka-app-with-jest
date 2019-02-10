@@ -1,8 +1,7 @@
+/** @module common */
 import 'isomorphic-fetch';
 import { v4 as uuid4 } from 'uuid';
 import { config } from './config';
-import { Consumer, KafkaClient, Offset } from 'kafka-node';
-import KafkaAvro from 'kafka-avro';
 
 /**
  * Sleep for the specified number of seconds
@@ -33,7 +32,9 @@ export const eventualApiEntry = async (url, options, attempts = 5) => {
     }
     throw new Error('Invalid response received');
   } catch (err) {
-    if ( attempts === 1) throw err;
+    if (attempts === 1) {
+      throw err;
+    }
     await sleep(1);
     await eventualApiEntry(url, options, attempts - 1);
   }
@@ -59,151 +60,16 @@ export const eventualQueueMember = async (haystack, needle, filterFunction, atte
     throw new Error(`Failed to get ${needle} in queue`);
   }
   await sleep(1);
-  return await eventualQueueMember(haystack, needle, filterFunction, attempts - 1);
-};
-
-/**
- * Get the Offset for a topic, used when we need to ensure no old messages are being processed
- * as part of the test run, only applies to kakfa-node instances
- *
- * @param {Object} offset - Kafka-node Offset instance
- * @param {String} topic - Topic to get offset for
- * @returns {Promise} - Offset for the topic
- */
-export const getOffset = (offset, topic) => {
-  return new Promise((resolve, reject) => {
-    return offset.fetchLatestOffsets([topic], (error, offsets) => {
-      if (error) {
-        reject(error.message);
-      }
-      resolve(offsets[topic][0]);
-    });
-  });
-};
-
-/**
- * Update the offset on the kafka-node consumer instance so it's only reading new messages
- *
- * @param {Consumer} consumer - kafka-node consumer instance
- * @param {Offset} offset - kafka-node offset instance
- * @returns {Promise<void>}
- */
-export const updateConsumerOffset = async (consumer, offset) => {
-  const newOffset = await getOffset(offset, config.consumerApp.inboundQueue.topic);
-  consumer.setOffset(config.consumerApp.inboundQueue.topic, 0, newOffset);
-};
-
-/**
- * Create a Kafka-node Consumer using the provided client and offset
- *
- * @param {KafkaClient} client - Client to use with Kafka
- * @param {Offset} offset - Topic Offset
- * @returns {Promise<Consumer>} Kafka Consumer for consumer-app's inbound topic
- */
-export const getKafkaConsumer = async (client, offset) => {
-  if (typeof (client) === 'undefined') {
-    throw new Error('Client not defined');
-  }
-  if (typeof (offset) === 'undefined') {
-    throw new Error('Offset not defined');
-  }
-  const deltaOffset = await getOffset(offset, config.consumerApp.inboundQueue.topic);
-  const payload = [
-    {
-      topic: config.consumerApp.inboundQueue.topic,
-      offset: deltaOffset,
-      partition: 0
-    }
-  ];
-  const options = {
-    autoCommit: false,
-    fetchMaxWaitMs: 1000,
-    fetchMaxBytes: 1024 * 1024,
-    fromOffset: true
-  };
-  return new Consumer(client, payload, options);
-};
-
-/**
- * Set up and return the kafka-node consumer and offset for the Consumer App's inbound queue
- *
- * @returns {Promise<{offset: Offset, consumer: Consumer}>}
- */
-export const getConsumerAppInboundQueueListener = async () => {
-  const client = new KafkaClient( { kafkaHost: config.consumerApp.inboundQueue.host });
-  const offset = new Offset(client);
-  const consumer = await getKafkaConsumer(client, offset);
-  return {
-    offset,
-    consumer
-  };
-};
-
-/**
- * Set up the kafka-avro client
- *
- * @returns {Promise<*>}
- */
-export const getKafkaAvroClient = async () => {
-  const client = new KafkaAvro(
-    {
-      kafkaBroker: config.producerApp.outboundQueue.host,
-      schemaRegistry: config.producerApp.outboundQueue.schemaRegistry,
-      topics: [config.producerApp.outboundQueue.topic],
-      fetchAllVersions: true
-    }
-  );
-  await client.init();
-  return client;
-};
-
-/**
- * Create a Consumer using the kafka-avro Client
- *
- * @param {KafkaAvro} client - Kafka-avro client instance
- * @returns {Promise} kafka-avro consumer
- */
-export const getKafkaAvroConsumer = async (client) => {
-  if (typeof (client) === 'undefined') {
-    throw new Error('client not supplied');
-  }
-  const consumer = await client.getConsumer({
-    'group.id': `end-to-end-test-${uuid4()}`,
-    'socket.keepalive.enable': true,
-    'enable.auto.commit': false
-  });
-  return new Promise((resolve, reject) => {
-    consumer.on('ready', () => resolve(consumer));
-    consumer.connect({}, (err) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      resolve(consumer);
-    });
-  });
-};
-
-/**
- * Set up and return the kafka-avro consumer for the Producer App's outbound queue
- *
- * @returns {Promise<void>}
- */
-export const getProducerAppOutboundQueueListener = async () => {
-  const client = await getKafkaAvroClient();
-  const consumer = await getKafkaAvroConsumer(client);
-  consumer.subscribe([config.producerApp.outboundQueue.topic]);
-  consumer.consume();
-  return consumer;
+  return eventualQueueMember(haystack, needle, filterFunction, attempts - 1);
 };
 
 export const formatDate = (date) => {
-  return date.getFullYear() + '-' +
-    ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
-    ('0' + date.getDate()).slice(-2) + 'T' +
-    ('0' + date.getHours()).slice(-2) + ':' +
-    ('0' + date.getMinutes()).slice(-2) + ':' +
-    ('0' + date.getSeconds()).slice(-2) + '.000Z';
+  return date.getFullYear() + '-'
+    + ('0' + (date.getMonth() + 1)).slice(-2) + '-'
+    + ('0' + date.getDate()).slice(-2) + 'T'
+    + ('0' + date.getHours()).slice(-2) + ':'
+    + ('0' + date.getMinutes()).slice(-2) + ':'
+    + ('0' + date.getSeconds()).slice(-2) + '.000Z';
 };
 
 /**
@@ -212,14 +78,15 @@ export const formatDate = (date) => {
  * @param {string} nhsNumber - NHS Number for the Patient
  * @param {string} wardCode - Code for the ward to admit patient to
  * @param {string} name - Name of the new patient
+ * @param {Date} admitDate - Admission Date for the patient
  * @returns {Promise<void>}
  */
-export const admitPatient = async (nhsNumber, wardCode, name = uuid4()) => {
+export const admitPatient = async (nhsNumber, wardCode, name = uuid4(), admitDate = new Date()) => {
   const dataToSend = {
     name,
     nhsNumber,
     admittingWard: wardCode,
-    admissionDate: formatDate(new Date())
+    admissionDate: formatDate(admitDate)
   };
   const options = {
     method: 'POST',
@@ -239,12 +106,13 @@ export const admitPatient = async (nhsNumber, wardCode, name = uuid4()) => {
  * Discharge patient by sending discharge details to the Producer App's /discharge endpoint
  *
  * @param {String} nhsNumber -NHS Number for the patient
+ * @param {Date} dischargeDate - Discharge Date for the patient
  * @returns {Promise<void>}
  */
-export const dischargePatient = async (nhsNumber) => {
+export const dischargePatient = async (nhsNumber, dischargeDate = new Date()) => {
   const dataToSend = {
     nhsNumber,
-    dischargeDate: formatDate(new Date())
+    dischargeDate: formatDate(dischargeDate)
   };
   const options = {
     method: 'POST',
@@ -266,14 +134,15 @@ export const dischargePatient = async (nhsNumber) => {
  * @param {String} nhsNumber - NHS Number of the patient
  * @param {String} fromWardCode - Code for the ward being transferred from
  * @param {String} toWardCode - Code for the ward being transferred to
+ * @param {Date} tDate - Transfer date for the patient
  * @returns {Promise<void>}
  */
-export const transferPatient = async (nhsNumber, fromWardCode, toWardCode) => {
+export const transferPatient = async (nhsNumber, fromWardCode, toWardCode, tDate = new Date()) => {
   const dataToSend = {
     nhsNumber,
     fromWard: fromWardCode,
     toWard: toWardCode,
-    transferDate: formatDate(new Date())
+    transferDate: formatDate(tDate)
   };
   const options = {
     method: 'POST',
@@ -345,7 +214,7 @@ export const findOutboundTransferMessage = (messages, nhsNumber) => {
  *
  * @param {Object[]} messages - Array of message object
  * @param {string} nhsNumber - NHS Number for the patient
- * @returns {Object[[]} - Array of filtered out admit messages for the patient
+ * @returns {Object[]} - Array of filtered out admit messages for the patient
  */
 export const findInboundAdmitMessage = (messages, nhsNumber) => {
   return messages.filter((message) => message.type === 'admit' && message.nhsNumber === nhsNumber);
@@ -356,7 +225,7 @@ export const findInboundAdmitMessage = (messages, nhsNumber) => {
  *
  * @param {Object[]} messages - Array of message object
  * @param {string} nhsNumber - NHS Number for the patient
- * @returns {Object[[]} - Array of filtered out discharge messages for the patient
+ * @returns {Object[]} - Array of filtered out discharge messages for the patient
  */
 export const findInboundDischargeMessage = (messages, nhsNumber) => {
   return messages.filter((message) => message.type === 'discharge' && message.nhsNumber === nhsNumber);
@@ -367,8 +236,24 @@ export const findInboundDischargeMessage = (messages, nhsNumber) => {
  *
  * @param {Object[]} messages - Array of message object
  * @param {string} nhsNumber - NHS Number for the patient
- * @returns {Object[[]} - Array of filtered out transfer messages for the patient
+ * @returns {Object[]} - Array of filtered out transfer messages for the patient
  */
 export const findInboundTransferMessage = (messages, nhsNumber) => {
   return messages.filter((message) => message.type === 'transfer' && message.nhsNumber === nhsNumber);
+};
+
+/**
+ * Get the second Transfer message (as admit triggers a transfer message we need to not return
+ * this message(
+ *
+ * @param {Object[]} messages - Array of message objects
+ * @param {string} nhsNumber - NHS Number of the patient
+ * @returns {Object[]} - Array of filtered out transfer messages for the patient
+ */
+export const findSecondInboundTransferMessage = (messages, nhsNumber) => {
+  const allMessages = messages.filter((message) => message.type === 'transfer' && message.nhsNumber === nhsNumber);
+  if (allMessages.length === 2) {
+    return [allMessages[1]];
+  }
+  return [];
 };

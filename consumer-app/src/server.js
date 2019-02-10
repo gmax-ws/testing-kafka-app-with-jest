@@ -64,9 +64,11 @@ export const getPatient = async (req, res, next) => {
   const patient = await db.patient.findOne({
     where: { nhsNumber: req.params.nhsNumber },
     include: [
+      { all: true, nested: true},
       {
         model: db.spell,
         where: { endDate: null },
+        required: false,
         include: [
           {
             model: db.patientMovement
@@ -75,7 +77,7 @@ export const getPatient = async (req, res, next) => {
       }
     ],
     order: [
-      [ db.spell, db.patientMovement, 'id', 'DESC']
+      [db.spell, db.patientMovement, 'id', 'DESC']
     ]
   });
   res.send(200, patient);

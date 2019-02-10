@@ -3,6 +3,11 @@
         "browser": false,
         "es6": true
     },
+    "globals": {
+        "consumerAppInboundMessages": "writeable",
+        "producerAppOutboundMessages": "writeable",
+        "fetch": "readable"
+    },
     "extends": "eslint-config-airbnb-base/legacy",
     "parser": "babel-eslint",
     "parserOptions": {
@@ -48,6 +53,7 @@
         "jest/no-identical-title": "error",
         "jest/prefer-to-have-length": "warn",
         "jest/valid-expect": "error",
-        "no-console": "off"
+        "no-console": "off",
+        "consistent-return": "off"
     }
 }

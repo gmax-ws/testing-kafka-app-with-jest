@@ -4,7 +4,11 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest --config=jest.config.js"
+    "test": "jest --config=jest.config.js --runInBand --forceExit --detectOpenHandles",
+    "generateDocs": "jsdoc ./src ./package.json",
+    "openDocs": "open out/tests/1.0.0/index.html",
+    "docs": "npm run generateDocs && npm run openDocs",
+    "lint": "eslint src"
   },
   "keywords": [],
   "author": "Colin Wren",
