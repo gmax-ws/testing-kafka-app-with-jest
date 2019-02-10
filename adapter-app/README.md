@@ -25,5 +25,5 @@ Currently if the schema registry isn't available on the server starting up the s
 ## Checking messages posted to Kafka
 You can check the messages being posted to Kafka with the following command.
 ```
-kafka-console-consumer --topic test --bootstrap-server localhost:9092
+kafka-console-consumer --topic patientAdministration --bootstrap-server localhost:9092
 ```

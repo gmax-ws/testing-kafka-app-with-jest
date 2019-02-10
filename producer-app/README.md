@@ -23,7 +23,7 @@ Currently if the schema registry isn't available on the server starting up the s
 ## Checking messages posted to Kafka
 You can check the messages being posted to Kafka with the following command.
 ```
-kafka-avro-console-consumer --value-deserializer io.confluent.kafka.serializers.KafkaAvroDeserializer --key-deserializer org.apache.kafka.common.serialization.StringDeserializer --formatter io.confluent.kafka.formatter.AvroMessageFormatter --property print.key=true --property schema.registry.url=http://localhost:8081 --topic test --bootstrap-server localhost:9092
+kafka-avro-console-consumer --value-deserializer io.confluent.kafka.serializers.KafkaAvroDeserializer --key-deserializer org.apache.kafka.common.serialization.StringDeserializer --formatter io.confluent.kafka.formatter.AvroMessageFormatter --property print.key=true --property schema.registry.url=http://localhost:8081 --topic patient --bootstrap-server localhost:9092
 
 ```
 

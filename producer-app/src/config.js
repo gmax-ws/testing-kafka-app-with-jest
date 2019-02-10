@@ -5,7 +5,7 @@ function getConfigValue(key, defaultValue) {
   return defaultValue;
 }
 
-export const topic = getConfigValue('KAFKA_TOPIC', 'test');
+export const topic = getConfigValue('KAFKA_TOPIC', 'patient');
 const kafkaBrokerHost = getConfigValue('KAFKA_BROKER_HOST', 'localhost');
 const kafkaBrokerPort = getConfigValue('KAFKA_BROKER_PORT', 9092);
 export const kafkaBroker = `${kafkaBrokerHost}:${kafkaBrokerPort}`;
