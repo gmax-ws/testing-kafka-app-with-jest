@@ -3,6 +3,8 @@ Example set of applications using Kafka and Avro and a set of end-to-end tests i
 
 This was built as a demo for my blog post about [Testing Kafka queues with Jest on my Medium](https://medium.com/@colinwren/testing-a-apache-kafka-based-application-with-jest-avro-kafka-and-node-kafka-5dfa50389121).
 
+If you find this project useful please leave a comment or 'Clap' on the blog post. Any PRs or Issues are gratefully accepted, this is a demo project so there may be use cases or bugs I've not covered.
+
 ## Set up
 Before running the stack and tests you'll need to build the docker images for the different apps. You can do this with the following commands:
 
