@@ -82,7 +82,7 @@ describe('KafkaProducer', () => {
       producer.sendMessageToKafka('test', { test: 'message' });
     });
     it('Uses the topic defined in config', () => {
-      expect(producerProduceMock.mock.calls[0][0]).toBe('test');
+      expect(producerProduceMock.mock.calls[0][0]).toBe('patient');
     });
     it('Uses -1 for the partition', () => {
       expect(producerProduceMock.mock.calls[0][1]).toBe(-1);
