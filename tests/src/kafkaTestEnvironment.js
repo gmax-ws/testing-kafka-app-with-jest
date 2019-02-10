@@ -31,7 +31,7 @@ const getOffset = (offset, topic) => {
       if (error) {
         reject(error.message);
       }
-      resolve(offsets[topic][0]);
+      resolve(offsets[topic]);
     });
   });
 };
@@ -50,21 +50,21 @@ const getKafkaConsumer = async (client, offset) => {
   if (typeof (offset) === 'undefined') {
     throw new Error('Offset not defined');
   }
-  const deltaOffset = await getOffset(offset, config.consumerApp.inboundQueue.topic);
-  const payload = [
-    {
+  const deltaOffsets = await getOffset(offset, config.consumerApp.inboundQueue.topic);
+  const payloads = Object.keys(deltaOffsets).map((key) => {
+    return {
       topic: config.consumerApp.inboundQueue.topic,
-      offset: deltaOffset,
-      partition: 0
-    }
-  ];
+      offset: deltaOffsets[key],
+      partition: parseInt(key, 10)
+    };
+  });
   const options = {
     autoCommit: false,
     fetchMaxWaitMs: 1000,
     fetchMaxBytes: 1024 * 1024,
     fromOffset: true
   };
-  return new Consumer(client, payload, options);
+  return new Consumer(client, payloads, options);
 };
 
 /**
